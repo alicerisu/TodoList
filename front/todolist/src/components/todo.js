@@ -20,7 +20,7 @@ const Todo = ({todo, deleteTodo, setFavorite}) => {
     }
     
     return(
-        <div className="todo">
+        <div className="todo" key={todo.id}>
             <p>{todo.description}</p>
             <div className="todoButtons">
                 <button className='deleteTodo' onClick={handleButtonDelClick}>Del</button>

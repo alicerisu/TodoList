@@ -32,7 +32,7 @@ const createToDo = (request, response) =>{
             throw error
         }
 
-        response.status(201).send(`"${description}" adicionado com sucesso `)
+        response.status(201).send(id)
     })
 }
 
@@ -52,7 +52,7 @@ const updateToDo = (request, response) => {
 const deleteToDo = (request, response) => { 
     const id = request.params.id
 
-    pool.query('DELETE FROM todos WHERE id = $1', [1], (error,results)=>{
+    pool.query('DELETE FROM todos WHERE id = $1', [id], (error,results)=>{
         if(error){
             throw error
         }

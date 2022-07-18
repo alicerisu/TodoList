@@ -1,16 +1,43 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import Input from './components/input'
-import { v4 as uuid } from 'uuid';
 import Todo from './components/todo'
+import { favTodo, getAllToDos, postNewTodo, sendDeleteTodo } from './data'
 
 function App() {
-  const [todoList, setTodoList] = useState([]);
+  const [todoList, setTodoList] = useState([])
 
-  const deleteTodo = (thisTodo) =>
+  useEffect(() => {
+    const fetchData = async () => {
+      const todos = await getAllToDos()
+      setTodoList(todos)
+    }
+
+    fetchData()
+  }, [])
+
+  const createNewTodo = async (description) => {
+    const id = await postNewTodo({description, favorite: false});
+
+    setTodoList([...todoList, {
+      id,
+      description,
+      favorite: false
+    }])
+  }
+
+  const deleteTodo = async (thisTodo) =>{
+    if(! await sendDeleteTodo(thisTodo.id)){
+      return;
+    }
+
     setTodoList(todoList.filter(x => x.id !== thisTodo.id))
+  }
 
-  const setFavorite = (thisTodo) => {
+  const setFavorite = async (thisTodo) => {
+    if(! await favTodo(thisTodo)){
+      return;
+    }
 
     setTodoList(todoList.map(todo => {
       if (todo.id === thisTodo.id) {
@@ -24,23 +51,10 @@ function App() {
     }))
   }
 
-  const createNewTodo = (description) => {
-    const id = uuid();
-
-    setTodoList([...todoList, {
-      id,
-      description,
-      favorite: false,
-      key: id
-    }])
-
-    console.log(todoList)
-  }
-
   return (
     <div className="App">
       <div className='container'>
-        {todoList.map(x => <Todo todo={x} deleteTodo={deleteTodo} setFavorite={setFavorite} key={x.key} />)}
+        {todoList.map(x => <Todo todo={x} deleteTodo={deleteTodo} setFavorite={setFavorite}/>)}
         <Input createNewTodo={createNewTodo} />
       </div>
     </div>
